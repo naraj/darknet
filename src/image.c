@@ -239,6 +239,11 @@ image **load_alphabet()
 void draw_detections(image im, detection *dets, int num, float thresh, char **names, image **alphabet, int classes)
 {
     int i,j;
+    static int framenum;
+    framenum++;
+    FILE *fp=fopen("logs.txt", "a");
+    if(fp == NULL)
+        exit(-1);
 
     for(i = 0; i < num; ++i){
         char labelstr[4096] = {0};
@@ -249,7 +254,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
                     strcat(labelstr, names[j]);
                     class = j;
                 } else {
-                    strcat(labelstr, ", ");
+                    strcat(labelstr, ";");
                     strcat(labelstr, names[j]);
                 }
                 printf("%s: %.0f%%\n", names[j], dets[i].prob[j]*100);
@@ -292,6 +297,7 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
 
             draw_box_width(im, left, top, right, bot, width, red, green, blue);
             if (alphabet) {
+                fprintf(fp, "%d,%s,%d,%d,%d,%d\n", framenum, labelstr, left, top, right, bot);
                 image label = get_label(alphabet, labelstr, (im.h*.03));
                 draw_label(im, top + width, left, label, rgb);
                 free_image(label);
@@ -307,6 +313,8 @@ void draw_detections(image im, detection *dets, int num, float thresh, char **na
             }
         }
     }
+
+    fclose(fp);
 }
 
 void transpose_image(image im)
