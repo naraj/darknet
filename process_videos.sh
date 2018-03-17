@@ -14,5 +14,17 @@ for filepath in $videos_list; do
         cmd="${yolo_cmd} $remote_video_path"
         output_logs_file="${filename}_yolo.csv"
         output_video_file="${filename}_yolo.avi"
-        ssh $remote_addr "cd $remote_video_dir; ls -la $filename; cd $darknet_path; pwd; $cmd; ls -la logs.txt; mv logs.txt $output_logs_file; ls -la test_dnn_out.avi; mv test_dnn_out.avi $output_video_file; rm $remote_video_path; ls -la $remote_video_path"
+        ssh "$remote_addr" << EOF
+        cd $remote_video_dir; 
+        ls -la $filename; 
+        cd $darknet_path; 
+        pwd; 
+        $cmd; 
+        ls -la logs.txt; 
+        mv logs.txt $output_logs_file;
+        ls -la test_dnn_out.avi;
+        mv test_dnn_out.avi $output_video_file;
+        rm $remote_video_path;
+        ls -la $remote_video_path;
+EOF
 done
